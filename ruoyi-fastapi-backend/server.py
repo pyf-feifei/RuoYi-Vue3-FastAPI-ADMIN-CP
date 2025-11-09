@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import APIRouter, FastAPI
+from fastapi.responses import JSONResponse
 from config.env import AppConfig
 from config.get_db import init_create_table
 from config.get_redis import RedisUtil
@@ -62,6 +63,11 @@ handle_middleware(app)
 # 加载全局异常处理方法
 handle_exception(app)
 
+
+# 添加健康检查端点（用于 Docker 健康检查）
+@app.get(f"{AppConfig.app_root_path}/health")
+async def health_check():
+    return JSONResponse(content={"status": "healthy", "app": AppConfig.app_name})
 
 # 创建主路由器，设置统一的路由前缀
 main_router = APIRouter(prefix=AppConfig.app_root_path)
