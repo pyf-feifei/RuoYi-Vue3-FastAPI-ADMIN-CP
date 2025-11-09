@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   postgres:
     image: postgres:latest
@@ -9,15 +9,16 @@ services:
       POSTGRES_USER: your_user # 请替换为实际用户名
       POSTGRES_DB: your_database # 请替换为实际数据库名
     ports:
-      - '35432:5432'
+      - "35432:5432"
     volumes:
       - ./pgdata:/var/lib/postgresql/data # 数据持久化目录
+      # - ./pgdata:/var/lib/postgresql/data # 数据持久化目录 不要用这个会有问题,出问题了需要改/pgdata名或/var/lib/postgresql/data/pgdata其他地址
   redis:
     image: redis:latest
     container_name: ruoyi-redis
     restart: unless-stopped
     command: redis-server --requirepass your_redis_password # 请替换为实际密码
     ports:
-      - '36379:6379'
+      - "36379:6379"
     volumes:
       - ./redisdata:/data # 数据持久化目录
