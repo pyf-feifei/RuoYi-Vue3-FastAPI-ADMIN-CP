@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from config.env import AppConfig
 from config.get_db import init_create_table
 from config.get_redis import RedisUtil
@@ -50,6 +50,9 @@ app = FastAPI(
     description=f'{AppConfig.app_name}接口文档',
     version=AppConfig.app_version,
     lifespan=lifespan,
+    docs_url=f"{AppConfig.app_root_path}/docs",
+    redoc_url=f"{AppConfig.app_root_path}/redoc",
+    openapi_url=f"{AppConfig.app_root_path}/openapi.json",
 )
 
 # 挂载子应用
@@ -59,6 +62,9 @@ handle_middleware(app)
 # 加载全局异常处理方法
 handle_exception(app)
 
+
+# 创建主路由器，设置统一的路由前缀
+main_router = APIRouter(prefix=AppConfig.app_root_path)
 
 # 加载路由列表
 controller_list = [
@@ -82,4 +88,8 @@ controller_list = [
 ]
 
 for controller in controller_list:
-    app.include_router(router=controller.get('router'), tags=controller.get('tags'))
+    main_router.include_router(router=controller.get(
+        'router'), tags=controller.get('tags'))
+
+# 将主路由器挂载到应用
+app.include_router(main_router)
